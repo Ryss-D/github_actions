@@ -1,0 +1,14 @@
+name: First Workflow
+## whit on we define when is excecuted based on github actions events
+on: workflow_dispatch
+#with jobs we define what to do
+jobs:
+#first-job is our custom name
+  first-job:
+  ##runs-on defines the runner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print greeting
+        run: echo "Hello World!"
+      - name: Print goodbye
+        run: exho "Done - bye!"
