@@ -1,0 +1,54 @@
+name: Test react code
+on: push
+## with [] we can add multiple event triggert
+##ieg [push, workflow_trigger]
+jobs:
+  ##by default create multiple jobs will run them in parallel
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+      # we can import " actions" into the github workflus thtat are the equivalent to 
+      #import " steps" to our workflows
+      #for actions instead of using run keyword er use usees
+      uses: actions/checkout
+      # we can also specify a version like actions/checkout@v3
+      - name: Intall NodeJS
+      uses: actions/setup-node
+      with:
+        node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+  ##this is how we can add multiple jobs to the same worflow
+  deploy:
+    ##usually runners are isoletaes between jobs
+    ##with need keyword we can move from parallel excecution to sequential
+    needs: test
+    ##now we will wait test to run succedfulle 
+    ##ieg [job1, job2]
+    ##will first assert bot jobs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+      uses: actions/checkout
+      - name: Intall NodeJS
+      uses: actions/setup-node
+      with:
+        node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Build project
+        run: npm run build
+      - name: Deploy
+        #usually here we deploy to server
+        run: echo "deploying"
+      
+
+
+
+
+
