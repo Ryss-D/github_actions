@@ -1,5 +1,26 @@
 name: Events Demo 1
-on: ...
+on:
+  pull_request:
+    types: 
+      - opened
+    branches:
+      - main
+      ##we are able to use a "regular" expression stale
+      - 'dev-*'
+   ##or
+## [opened, edited]
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      ##we are able to use a "regular" expression stale
+      - 'dev-*'
+    paths:
+    ##we can run workflows if any file changes on specific paths
+      - '**.js'
+    paths-igonore:
+     ## it  means that if any file here changes workflow will not run
+      - '.github/workflows/*'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,3 +37,8 @@ jobs:
         run: npm run build
       - name: Deploy project
         run: echo "Deploying..."
+
+## by feault fork dont tirgger a pull requuest based workflow
+## so they first need aprove via cli
+## we can skip the actions using special commands into our commit
+##ig commit -m "my message [skip ci]"
