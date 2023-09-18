@@ -1,4 +1,9 @@
 name: Deploy website
+##artifact is the common name for the "output" of a job
+## who creates assets ieg a appbinery, or a website files
+##that gonna be used later
+##job outputs are just simple values that 
+##usually must be avabliable cross jobs
 on:
   push:
     branches:
@@ -9,6 +14,13 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          #we create a finamic key in order to delete and recreate
+          ##the file when it changes
+          key: deps-node-modules-${{ hashFiles('**/packages-lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Lint code
@@ -18,6 +30,9 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    outputs: 
+      ##name of aoutputs is up to us
+      script-file: ${{ steps.publish.outputs.script-file }}
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -25,9 +40,35 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Publish JS filename
+        ##this id is to acces it form context object
+        id: publish
+        ##here we search for a stringh, then store it into script-file variable
+        ##and finally sabe it into github_output file who store everything a key-value pair
+        run: find dist/assets/*.js -rype f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+        ##alternative old fashion way
+        #run: find dist/assets/*.js -rype f -execdir echo '""set-output name=script-file::{}' >> $GITHUB_OUTPUT ';'
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+          with:
+            name: dist-files
+          ##this is what fies will be saved
+          path: |
+            dist
+            package.json
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      ##with this we can download artifacts
+      - name: Get build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          ##this must be same name that we use when create/upload
+          name: dist-files
+      - name: Output contents
+        run: ls
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}"
       - name: Deploy
         run: echo "Deploying..."
