@@ -33,8 +33,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Test code
+        ##the id is up to us
+        id: run-test
         run: npm run test
       - name: Upload test report
+        ##with this we will check info about certain step
+        if: failure() && steps.run-tests.outcome == 'failure'
+        ##failure funciton returns true when any previus step or job fail
+        ##otyhers are success(), always(), cancelled()
         uses: actions/upload-artifact@v3
         with:
           name: test-report
@@ -73,3 +79,15 @@ jobs:
         run: ls
       - name: Deploy
         run: echo "Deploying..."
+   report:
+    ##we can add conditional at step and job level
+    needs: [build, lint, deploy]
+    if: failure()
+    run-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "something went wrong"
+          echo "${{ toJSON(github) }}"
+
+
