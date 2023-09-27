@@ -1,0 +1,27 @@
+name: Matrix Demo
+on: push
+jobs:
+  build:
+    stategy:
+      matrix:
+        ##this are valuers up to us who can change
+        ##the key to store them is aup to us too
+        node-version: [12, 14, 16]
+        operating-system: [ubuntu-latest, widows-latest]
+
+    ##we can acces alus on matrix with the spcial
+    ##context object matrix
+    runs-on: ${{ matrix.operating-system }} 
+    ## this commasnd will make the workflow run one time
+    ##for every value on operating system on the matrix
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Intall NoeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }} 
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build project
+        run: npm run build
