@@ -10,8 +10,22 @@ on:
         required: true
         default: dist
         type: string
+    secrets:
+      some-secret:
+        required: false
+        ##default: 
+    ##we can also create outputs
+    outputs:
+      result:
+        description: the result of deployment operation
+        ##this output is job related
+        value: ${{ jobs.deploy.outputs.outcome }} 
 jobs:
+
   deploy:
+    outputs:
+    ##this output come from a especific step with set-result id
+      outcome: $${{ steps.set-result.outputs.step-result }}
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -21,3 +35,7 @@ jobs:
           name: ${{ inputs.artifact-name }} 
       - name: Output information
         run: echo "Deploying & uploading..."
+      ##this is how we add a output to a reusable workflow
+      - name: Set result output
+      id: set-result
+        run: echo "step-result=sucess" >> $GITHUB_OUTPUT

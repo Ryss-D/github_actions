@@ -76,6 +76,20 @@ jobs:
     ##with with we pass the arguments
     with:
       artifact-name: dist-files
+    #secrest are not provided with with
+    secrets:
+      some-secret: ${{ secrests.some-secret }}
+
+  ## this is how to use a output from a reusable worflow
+   print-deplow-result:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      -name: Print deploy outpu
+        ##needs is a another special context object
+        ##result is a output named on the deploy worflow/job
+        run: echo "${{ needs.deploy.outputs.result }}"
+
    report:
     ##we can add conditional at step and job level
     needs: [build, lint, deploy]
