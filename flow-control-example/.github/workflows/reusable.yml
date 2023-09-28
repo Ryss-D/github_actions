@@ -1,0 +1,23 @@
+name: Reusable Deploy
+##on: wrokflow_call allow us to call this workflow from other
+on: 
+  workflow_call 
+    ##we can also receive inputs as on a fuction
+    inputs:
+      ##this names are up to us
+      artifact-name: 
+        description: The name of the deployable artifact file
+        required: true
+        default: dist
+        type: string
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/download-artifacts@v3
+        with:
+          ##inputs is a special context object
+          name: ${{ inputs.artifact-name }} 
+      - name: Output information
+        run: echo "Deploying & uploading..."
