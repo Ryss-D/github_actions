@@ -8,6 +8,14 @@ jobs:
         ##the key to store them is aup to us too
         node-version: [12, 14, 16]
         operating-system: [ubuntu-latest, widows-latest]
+        ##the include reserved word allowus to create specific combinations
+        include:
+          - node-version: 18
+            operating-system: ubuntu-latest
+        ##we can also exclude especific combinations
+        exclude:
+          - node-version: 12
+            operating-system: windows-latest
 
     ##we can acces alus on matrix with the spcial
     ##context object matrix
