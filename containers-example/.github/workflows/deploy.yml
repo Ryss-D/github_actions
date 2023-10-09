@@ -11,6 +11,14 @@ jobs:
   test:
     environment: testing
     runs-on: ubuntu-latest
+    ##this is the only needed to run job in a container
+    ## images names need to be avaliable in public repositories ieg dockerhub
+    ##container:  node 
+    ##or
+    container:
+      image: node:16
+      ##this refers to container env variables; not step variables
+      # env: 
     env:
       MONGODB_CONNECTION_PROTOCOL: mongodb+srv
       MONGODB_CLUSTER_ADDRESS: cluster0.ntrwp.mongodb.net
