@@ -1,0 +1,20 @@
+##creating a composy custom action
+name: "Get dependies"
+##this actions is not a workflow, so not containt on:
+description: 'Fet the dependencies (via npm)  and cache the  and cache them.'
+runs:
+  ##this is obligatiry
+  using: 'composite'
+  ##now we define the steps as on a workflow
+  steps:
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+      path: node_modules
+      key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci
+      #on custom actions we must specify the shell
+      shell: bash
