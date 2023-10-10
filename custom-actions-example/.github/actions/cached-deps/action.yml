@@ -2,19 +2,31 @@
 name: "Get dependies"
 ##this actions is not a workflow, so not containt on:
 description: 'Fet the dependencies (via npm)  and cache the  and cache them.'
+##for accept imput we only use the input reserved parameter
+inputs:
+  ##this names are up to us
+  caching: 
+    ##this attribute is obligatores
+    description: 'Wheteher to cache depencies or not.'
+    ##we can make it required or not
+    required: true
+    ##we can also add default values
+    default: 'true'
 runs:
   ##this is obligatiry
   using: 'composite'
   ##now we define the steps as on a workflow
   steps:
     - name: Cache dependencies
+      ##nputs is another github actions object
+      if: inputs.caching == 'true'
       id: cache
       uses: actions/cache@v3
       with:
       path: node_modules
       key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.cache.outputs.cache-hit != 'true' || inputs.caching != 'true'
       run: npm ci
       #on custom actions we must specify the shell
       shell: bash
