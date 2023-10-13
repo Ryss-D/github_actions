@@ -9,15 +9,21 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
-      - name: Cache dependencies
-        id: cache
-        uses: actions/cache@v3
+      - name: Load & cache dependencies
+        id: cache-step
+        ##this name dependes or where the action si is
+        ##stand alone repo
+        ##uses: username/repo
+        ##created as local in this project
+        ##path is relative to root forlder not to action
+        uses: ./.github/actions/cached-deps
         with:
-          path: node_modules
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+          ## we pass the parameters as on a every other custom action
+          caching: 'false'
+
+        ## here we can use the information form cstom actions outputs
+      - name: Output infomation
+          run: echo "Cache used? ${{ steps.cache-step.outputs.used-cache }}"
       - name: Lint code
         run: npm run lint
   test:
